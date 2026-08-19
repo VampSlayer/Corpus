@@ -31,7 +31,7 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 
 ## ✨ Features
 
-- 🗺️ **Auto-Generated System Map**: Crawls `catalog-info.yaml` (Backstage-style) files to map dependencies (`calls`) and reverse-dependencies (`calledBy`) automatically.
+- 🗺️ **Auto-Generated Entity Graph**: Fully parses Backstage `catalog-info.yaml` entities (Components, APIs, Systems, Users) and generates a bidirectional relationship graph using well-known relations (e.g., `ownerOf`/`ownedBy`, `providesApi`/`apiProvidedBy`).
 - 📖 **Centralized Doc Search**: Fast lexical search across `README.md`, `docs/**/*.md`, `adr/**/*.md`, and AI skills across your entire org.
 - 🔍 **Global Code Search**: Keyword search across all organization repositories via the GitHub Code Search API.
 - 💬 **Issue & PR Context**: Proxies to GitHub's search API to find discussions, PRs, and issues across the org (`search_issues_and_prs`).
@@ -142,7 +142,7 @@ claude mcp add corpus "node $(pwd)/dist/src/index.js"
 
 Corpus automatically generates a global dependency graph of your organization's services. To participate in the system map, each repository should contain a `catalog-info.yaml` file at its root, conforming to the [Backstage Descriptor Format](https://backstage.io/docs/features/software-catalog/descriptor-format).
 
-Ideally, your `catalog-info.yaml` should define a `Component` and list the services it depends on under `spec.dependsOn`. Corpus reads these dependencies and automatically computes the reverse edges (which services call yours) to create a complete map of your ecosystem!
+Because Corpus acts like a Backstage catalog processor, it extracts any entity type (Component, API, System, Group) and automatically wires up bidirectional relationships. If your `Component` defines `owner: group:auth-team` and `providesApis: [api:auth-api]`, Corpus automatically generates the `ownedBy`/`ownerOf` and `providesApi`/`apiProvidedBy` edges so AI agents can natively traverse your organization's entire service graph.
 
 **Example `catalog-info.yaml`:**
 
@@ -155,7 +155,9 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: auth-team
+  owner: group:auth-team
+  providesApis:
+    - api:auth-api
   dependsOn:
     - component:user-database
     - component:email-service
