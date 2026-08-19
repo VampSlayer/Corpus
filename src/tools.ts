@@ -23,11 +23,8 @@ let manifestCache: any = null;
 let searchIndex: MiniSearch | null = null;
 const docsMap: Record<string, any> = {};
 
-export function loadCorpus() {
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error('manifest.json not found. Run build:corpus first.');
-  }
-  manifestCache = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+export function _loadCorpusData(data: any) {
+  manifestCache = data;
 
   searchIndex = new MiniSearch({
     fields: ['title', 'content'], // fields to index for full-text search
@@ -36,6 +33,9 @@ export function loadCorpus() {
 
   const docsToIndex = [];
   let idCounter = 1;
+
+  // Clear docsMap for tests
+  for (const key in docsMap) delete docsMap[key];
 
   for (const [repoName, repoData] of Object.entries(manifestCache.repos)) {
     for (const doc of (repoData as any).docs) {
@@ -55,6 +55,14 @@ export function loadCorpus() {
   }
 
   searchIndex.addAll(docsToIndex);
+}
+
+export function loadCorpus() {
+  if (!fs.existsSync(manifestPath)) {
+    throw new Error('manifest.json not found. Run build:corpus first.');
+  }
+  const manifestData = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  _loadCorpusData(manifestData);
 }
 
 export function getSystemMap() {
