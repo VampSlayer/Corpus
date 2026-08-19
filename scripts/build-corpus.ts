@@ -43,7 +43,7 @@ async function buildCorpus() {
     if (!pageRepos || pageRepos.length === 0) break;
     // Filter to just the requested owner in case of user repos
     const filtered = pageRepos.filter(
-      (r: any) => r.owner.login.toLowerCase() === GIT_ORG.toLowerCase()
+      (r: any) => r.owner.login.toLowerCase() === GIT_ORG!.toLowerCase()
     );
     repos = repos.concat(filtered);
     page++;
