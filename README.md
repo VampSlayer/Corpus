@@ -34,7 +34,7 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 ## ✨ Features
 
 - 🗺️ **Auto-Generated Entity Graph**: Fully parses Backstage `catalog-info.yaml` entities (Components, APIs, Systems, Users) and generates a bidirectional relationship graph using well-known relations (e.g., `ownerOf`/`ownedBy`, `providesApi`/`apiProvidedBy`).
-- 📖 **Centralized Doc Search**: Fast lexical search across `README.md`, `docs/**/*.md`, `adr/**/*.md`, and AI skills across your entire org.
+- 📖 **Centralized Doc Search**: Search across `README.md`, `docs/**/*.md`, `adr/**/*.md`, and AI skills across your entire org. Choose between fast Lexical (keyword) search or state-of-the-art Semantic (vector embedding) search run locally in-memory.
 - 🔍 **Global Code Search**: Keyword search across all organization repositories via your provider's native Code Search APIs.
 - 💬 **Issue & PR Context**: Proxies to your VCS's search APIs to find discussions, PRs, and issues across the org (`search_issues_and_prs`).
 - 📖 **File Reading**: Direct access to precise file contents from any repository branch or commit.
