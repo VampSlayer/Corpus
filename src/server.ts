@@ -1,6 +1,15 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { getSystemMap, searchDocs, readDoc, searchCode, readFile, reportDocGap } from './tools.js';
+import {
+  getSystemMap,
+  searchDocs,
+  readDoc,
+  searchCode,
+  readFile,
+  reportDocGap,
+  listApiSchemas,
+  searchIssuesAndPRs
+} from './tools.js';
 
 export function createServerApp() {
   const server = new Server(
@@ -70,6 +79,22 @@ export function createServerApp() {
           },
           required: ['repo', 'path']
         }
+      },
+      {
+        name: 'list_api_schemas',
+        description: 'List all OpenAPI / Swagger schemas found across the organization.',
+        inputSchema: { type: 'object', properties: {} }
+      },
+      {
+        name: 'search_issues_and_prs',
+        description: 'Search across all GitHub issues and pull requests in the organization.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Search query' }
+          },
+          required: ['query']
+        }
       }
     ];
 
@@ -114,6 +139,12 @@ export function createServerApp() {
           return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         case 'report_doc_gap':
           result = await reportDocGap(args?.question as string, args?.context as string);
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        case 'list_api_schemas':
+          result = listApiSchemas();
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        case 'search_issues_and_prs':
+          result = await searchIssuesAndPRs(args?.query as string);
           return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         default:
           throw new Error(`Unknown tool: ${name}`);

@@ -106,6 +106,22 @@ export function readDoc(id: string) {
   };
 }
 
+export function listApiSchemas() {
+  if (!searchIndex) loadCorpus();
+  const schemas = [];
+  for (const doc of Object.values(docsMap)) {
+    if (doc.path.match(/(openapi|swagger)\.(yaml|yml|json)$/i)) {
+      schemas.push({
+        id: doc.id,
+        repo: doc.repo,
+        path: doc.path,
+        html_url: doc.html_url
+      });
+    }
+  }
+  return schemas;
+}
+
 let accountType: string | null = null;
 
 export async function searchCode(query: string) {
@@ -135,6 +151,39 @@ export async function searchCode(query: string) {
     path: item.path,
     html_url: item.html_url,
     sha: item.sha
+  }));
+}
+
+export async function searchIssuesAndPRs(query: string) {
+  if (!GIT_ORG || !GIT_PAT) throw new Error('GIT_ORG and GIT_PAT required.');
+
+  if (!accountType) {
+    const res = await fetch(`${API_BASE}/users/${GIT_ORG}`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      accountType = data.type === 'User' ? 'user' : 'org';
+    } else {
+      accountType = 'org'; // fallback
+    }
+  }
+
+  // Combine query with org/user scope
+  const q = encodeURIComponent(`${query} ${accountType === 'user' ? 'user' : 'org'}:${GIT_ORG}`);
+  const url = `${API_BASE}/search/issues?q=${q}&per_page=10`;
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    throw new Error(`GitHub Issue Search failed: ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data.items.map((item: any) => ({
+    title: item.title,
+    state: item.state,
+    html_url: item.html_url,
+    repo: item.repository_url.split('/').slice(-1)[0], // Extract repo name from URL
+    is_pr: !!item.pull_request,
+    body_excerpt: item.body ? item.body.substring(0, 200).replace(/\n/g, ' ') + '...' : ''
   }));
 }
 

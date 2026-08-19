@@ -24,8 +24,15 @@ test('isDocPath', async (t) => {
   });
 
   await t.test('includes .claude/skills/**/SKILL.md', () => {
-    assert.equal(isDocPath('.claude/skills/setup/SKILL.md'), true);
+    assert.strictEqual(isDocPath('.claude/skills/setup/SKILL.md'), true);
     assert.equal(isDocPath('.claude/skills/other.md'), false);
+  });
+
+  await t.test('includes OpenAPI and Swagger schemas', () => {
+    assert.strictEqual(isDocPath('openapi.yaml'), true);
+    assert.strictEqual(isDocPath('docs/swagger.json'), true);
+    assert.strictEqual(isDocPath('api/OpenApi.yml'), true);
+    assert.strictEqual(isDocPath('something-else.yaml'), false);
   });
 });
 

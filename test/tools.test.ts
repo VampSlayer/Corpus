@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { _loadCorpusData, searchDocs, readDoc } from '../src/tools.js';
+import { _loadCorpusData, searchDocs, readDoc, listApiSchemas } from '../src/tools.js';
 
 test('Corpus Search Tools', async (t) => {
   // Test fixture setup
@@ -21,6 +21,12 @@ test('Corpus Search Tools', async (t) => {
             sha: '456',
             content: 'Welcome to the test repository. We build fast software.',
             html_url: 'https://github.com/org/test-repo/blob/main/README.md'
+          },
+          {
+            path: 'openapi.yaml',
+            sha: '789',
+            content: 'openapi: 3.0.0\ninfo:\n  title: Test API',
+            html_url: 'https://github.com/org/test-repo/blob/main/openapi.yaml'
           }
         ]
       }
@@ -58,6 +64,13 @@ test('Corpus Search Tools', async (t) => {
     assert.throws(() => {
       readDoc('invalid_id_999');
     }, /Document with ID invalid_id_999 not found/);
+  });
+
+  await t.test('listApiSchemas returns only API schema files', () => {
+    const schemas = listApiSchemas();
+    assert.equal(schemas.length, 1);
+    assert.equal(schemas[0].path, 'openapi.yaml');
+    assert.equal(schemas[0].repo, 'test-repo');
   });
 });
 

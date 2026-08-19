@@ -34,7 +34,9 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 - 🗺️ **Auto-Generated System Map**: Crawls `catalog-info.yaml` (Backstage-style) files to map dependencies (`calls`) and reverse-dependencies (`calledBy`) automatically.
 - 📖 **Centralized Doc Search**: Fast lexical search across `README.md`, `docs/**/*.md`, `adr/**/*.md`, and AI skills across your entire org.
 - 🔍 **Global Code Search**: Keyword search across all organization repositories via the GitHub Code Search API.
+- 💬 **Issue & PR Context**: Proxies to GitHub's search API to find discussions, PRs, and issues across the org (`search_issues_and_prs`).
 - 📄 **File Reading**: Direct access to precise file contents from any repository branch or commit.
+- ⚙️ **API Schema Aggregation**: Automatically indexes `openapi` and `swagger` files so agents can pull down endpoint contracts instantly (`list_api_schemas`).
 - 🚀 **Zero-Config Start**: Auto-runs missing builds on startup. If you have credentials, just hit `npm start` and the server fetches and indexes everything.
 - 🐞 **Gap Reporting**: Optional ability to file a GitHub issue when docs fail to answer an agent's question.
 

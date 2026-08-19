@@ -6,6 +6,7 @@ export function isDocPath(p: string): boolean {
   if (p.startsWith('docs/') && p.endsWith('.md')) return true;
   if (p.startsWith('adr/') && p.endsWith('.md')) return true;
   if (p.match(/^\.claude\/skills\/.*\/SKILL\.md$/)) return true;
+  if (p.match(/(openapi|swagger)\.(yaml|yml|json)$/i)) return true;
   return false;
 }
 
