@@ -1,4 +1,5 @@
 node_modules
 dist
-corpus/manifest.json
+corpus
 .env
+TODO.md
