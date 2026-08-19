@@ -152,6 +152,18 @@ spec:
     - component:email-service
 ```
 
+## 💡 Best Practices & Philosophy
+
+To get the absolute most out of Corpus and your AI agents, we recommend the following ecosystem practices:
+
+1. **Keep Docs Close to Code**: Documentation should live in the repository next to the code. The best place to document how a system works is directly beside the system itself. Corpus automatically picks up `docs/**/*.md` and `adr/**/*.md` across all your repos.
+2. **Central Wiki Repository**: If you have company-wide architectural decisions, RFCs, or code-quality standards that span multiple systems, keep them in a central "Wiki" repository as markdown files. Corpus will aggregate them perfectly.
+3. **Synergy with Spotify Backstage**: If you use [Backstage](https://backstage.io/), Corpus is the perfect companion.
+   - **Backstage** is an Internal Developer Portal (IDP) built for _humans_, providing a rich web UI.
+   - **Corpus** is an IDP built for _AI Agents_, exposing the exact same context over MCP.
+     Because Corpus natively parses standard `catalog-info.yaml` files, there is zero duplicated work. If your teams are already defining `dependsOn`, `lifecycle`, and `owner` tags for Backstage, Corpus automatically scoops them up and translates them into an active graph that AI agents can traverse.
+4. **Frequent Automated Updates**: The Corpus is meant to be a living, breathing snapshot of your organization. Running the build scripts (`npm run build`) re-fetches and rebuilds the corpus locally. Because it's a simple API scraping script, it consumes **zero LLM tokens** to build. Ideally, Corpus should be deployed centrally within your company, using a cron job (like a GitHub Action) to rebuild the `manifest.json` every night and distribute it to your developers.
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started, set up your development environment, and submit Pull Requests.
