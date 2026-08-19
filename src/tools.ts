@@ -172,6 +172,40 @@ export function readDoc(id: string) {
   };
 }
 
+export function listCompanySkills() {
+  if (Object.keys(docsMap).length === 0) loadCorpus();
+
+  const skills = [];
+
+  for (const doc of Object.values(docsMap)) {
+    if (doc.path.includes('.agents/skills/') && doc.path.endsWith('SKILL.md')) {
+      // Basic YAML frontmatter parser
+      const match = doc.content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      let name = doc.path;
+      let description = 'No description provided.';
+
+      if (match) {
+        const frontmatter = match[1];
+        const nameMatch = frontmatter.match(/name:\s*(.*)/);
+        const descMatch = frontmatter.match(/description:\s*(.*)/);
+        if (nameMatch) name = nameMatch[1].trim();
+        if (descMatch) description = descMatch[1].trim();
+      }
+
+      skills.push({
+        id: doc.id,
+        repo: doc.repo,
+        name,
+        description,
+        path: doc.path,
+        html_url: doc.html_url
+      });
+    }
+  }
+
+  return skills;
+}
+
 export function listApiSchemas() {
   if (!searchIndex) loadCorpus();
   const schemas = [];

@@ -8,7 +8,8 @@ import {
   readFile,
   reportDocGap,
   listApiSchemas,
-  searchIssuesAndPRs
+  searchIssuesAndPRs,
+  listCompanySkills
 } from './tools.js';
 
 export function createServerApp() {
@@ -86,6 +87,12 @@ export function createServerApp() {
         inputSchema: { type: 'object', properties: {} }
       },
       {
+        name: 'list_company_skills',
+        description:
+          'List all AI skills found across the organization (extracted from .agents/skills/**/SKILL.md). Returns the name and description of each skill.',
+        inputSchema: { type: 'object', properties: {} }
+      },
+      {
         name: 'search_issues_and_prs',
         description: 'Search across all GitHub issues and pull requests in the organization.',
         inputSchema: {
@@ -142,6 +149,9 @@ export function createServerApp() {
           return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         case 'list_api_schemas':
           result = listApiSchemas();
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+        case 'list_company_skills':
+          result = listCompanySkills();
           return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         case 'search_issues_and_prs':
           result = await searchIssuesAndPRs(args?.query as string);

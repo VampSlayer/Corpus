@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { _loadCorpusData, searchDocs, readDoc, listApiSchemas } from '../src/tools.js';
+import {
+  _loadCorpusData,
+  searchDocs,
+  readDoc,
+  listApiSchemas,
+  listCompanySkills
+} from '../src/tools.js';
 
 test('Corpus Search Tools', async (t) => {
   // Test fixture setup
@@ -27,6 +33,13 @@ test('Corpus Search Tools', async (t) => {
             sha: '789',
             content: 'openapi: 3.0.0\ninfo:\n  title: Test API',
             html_url: 'https://github.com/org/test-repo/blob/main/openapi.yaml'
+          },
+          {
+            path: '.agents/skills/test/SKILL.md',
+            sha: 'abc',
+            content:
+              '---\nname: Test Skill\ndescription: A description of the skill\n---\nHere is how to do it.',
+            html_url: 'https://github.com/org/test-repo/blob/main/.agents/skills/test/SKILL.md'
           }
         ]
       }
@@ -71,6 +84,13 @@ test('Corpus Search Tools', async (t) => {
     assert.equal(schemas.length, 1);
     assert.equal(schemas[0].path, 'openapi.yaml');
     assert.equal(schemas[0].repo, 'test-repo');
+  });
+
+  await t.test('listCompanySkills extracts YAML frontmatter', () => {
+    const skills = listCompanySkills();
+    assert.equal(skills.length, 1);
+    assert.equal(skills[0].name, 'Test Skill');
+    assert.equal(skills[0].description, 'A description of the skill');
   });
 
   await t.test('searchDocs executes semantic search when configured', async () => {
