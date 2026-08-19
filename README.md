@@ -27,7 +27,7 @@
 
 **Corpus** aggregates the documentation across all your organization's repositories, builds a live system map using Spotify Backstage catalog entities, and puts it all behind a powerful **Model Context Protocol (MCP)** server.
 
-It supports **GitHub** and **GitLab** out of the box, with an extensible adapter architecture to support any VCS provider.
+It supports **GitHub**, **GitLab**, **Bitbucket**, and **Azure DevOps** out of the box, with an extensible adapter architecture to support any VCS provider.
 
 Give your AI agents (Claude, Copilot, etc.) the holistic context they need to understand your architecture, service ownership, docs, and code—all in one place!
 
