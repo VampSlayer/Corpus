@@ -21,7 +21,7 @@ import {
 const GIT_ORG = process.env.GIT_ORG;
 const GIT_PAT = process.env.GIT_PAT;
 
-const corpusDir = path.resolve(process.cwd(), 'corpus');
+const corpusDir = process.env.CORPUS_DIR || path.resolve(process.cwd(), 'corpus');
 const manifestPath = path.join(corpusDir, 'manifest.json');
 const systemMapPath = path.join(corpusDir, 'system-map.yaml');
 
