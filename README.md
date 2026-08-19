@@ -15,7 +15,7 @@
       <img src="https://img.shields.io/badge/MCP-Ready-blue?style=for-the-badge&logo=modelcontextprotocol" alt="MCP Ready" />
     </a>
     <a href="https://nodejs.org">
-      <img src="https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js" alt="Node.js 18+" />
+      <img src="https://img.shields.io/badge/Node.js-22+-green?style=for-the-badge&logo=node.js" alt="Node.js 22+" />
     </a>
     <a href="https://github.com">
       <img src="https://img.shields.io/badge/GitHub-Integrated-black?style=for-the-badge&logo=github" alt="GitHub Integrated" />
@@ -42,7 +42,7 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 
 ### 1. Prerequisites
 
-- **Node.js** v18+
+- **Node.js** v22+
 - **GitHub PAT** (Personal Access Token):
   - **Classic Token**: Needs `repo` (to read private repos) and `read:org` (if querying an organization).
   - **Fine-Grained Token**: Needs `Contents: Read-only` and `Metadata: Read-only` for all repositories. If you enable `ENABLE_GAP_REPORTING`, you also need `Issues: Read & Write` on the target repository.
@@ -52,7 +52,7 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 Create a `.env` file in the root directory:
 
 ```env
-GIT_ORG=your-github-org
+GIT_ORG=your-github-org-or-username
 GIT_PAT=your-github-personal-access-token
 
 # Optional
@@ -72,6 +72,26 @@ _Note: `npm start` automatically kicks off the corpus and system-map generation 
 
 ## 🤖 Registering with AI Clients
 
+### Antigravity
+
+Antigravity natively supports MCP. Configure the server globally by adding it to `~/.gemini/config/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "corpus": {
+      "command": "node",
+      "args": ["/absolute/path/to/code-context-mcp/dist/src/index.js"],
+      "env": {
+        "GIT_ORG": "your-github-org",
+        "DOTENV_CONFIG_PATH": "/absolute/path/to/code-context-mcp/.env",
+        "CORPUS_DIR": "/absolute/path/to/code-context-mcp/corpus"
+      }
+    }
+  }
+}
+```
+
 ### Claude Desktop
 
 Add this to your `claude_desktop_config.json`:
@@ -81,10 +101,11 @@ Add this to your `claude_desktop_config.json`:
   "mcpServers": {
     "corpus": {
       "command": "node",
-      "args": ["/absolute/path/to/code-context-mcp/dist/index.js"],
+      "args": ["/absolute/path/to/code-context-mcp/dist/src/index.js"],
       "env": {
         "GIT_ORG": "your-github-org",
-        "GIT_PAT": "your-github-pat"
+        "GIT_PAT": "your-github-pat",
+        "CORPUS_DIR": "/absolute/path/to/code-context-mcp/corpus"
       }
     }
   }
@@ -96,7 +117,7 @@ Add this to your `claude_desktop_config.json`:
 Run the following in the project root:
 
 ```bash
-claude mcp add corpus "node $(pwd)/dist/index.js"
+claude mcp add corpus "node $(pwd)/dist/src/index.js"
 ```
 
 ## 🏗️ Architecture & Commands
@@ -112,7 +133,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 This project enforces Conventional Commits. A pre-commit hook automatically formats your code with Prettier and checks it with ESLint.
 
-See the [Setup Skill Guide](.claude/skills/setup/SKILL.md) for more details.
+See the [Setup Skill Guide](.agents/skills/setup/SKILL.md) for more details.
 
 ## 📄 License
 
