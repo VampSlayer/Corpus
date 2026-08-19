@@ -178,7 +178,7 @@ export function listCompanySkills() {
   const skills = [];
 
   for (const doc of Object.values(docsMap)) {
-    if (doc.path.includes('.agents/skills/') && doc.path.endsWith('SKILL.md')) {
+    if (doc.path.match(/^\.[^/]+\/skills\/.*\/SKILL\.md$/)) {
       // Basic YAML frontmatter parser
       const match = doc.content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
       let name = doc.path;

@@ -89,7 +89,7 @@ export function createServerApp() {
       {
         name: 'list_company_skills',
         description:
-          'List all AI skills found across the organization (extracted from .agents/skills/**/SKILL.md). Returns the name and description of each skill.',
+          'List all AI skills found across the organization (extracted from .[client]/skills/**/SKILL.md). Returns the name and description of each skill.',
         inputSchema: { type: 'object', properties: {} }
       },
       {

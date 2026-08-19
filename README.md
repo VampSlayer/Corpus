@@ -39,7 +39,7 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 - 💬 **Issue & PR Context**: Proxies to your VCS's search APIs to find discussions, PRs, and issues across the org (`search_issues_and_prs`).
 - 📖 **File Reading**: Direct access to precise file contents from any repository branch or commit.
 - 🔗 **API Schema Aggregation**: Automatically indexes `openapi` and `swagger` files so agents can pull down endpoint contracts instantly (`list_api_schemas`).
-- 🧠 **Automated Skill Directory**: Scans all repositories for `.agents/skills/**/SKILL.md` files and extracts their YAML frontmatter, allowing AI agents to dynamically discover and learn your company's standard operating procedures (`list_company_skills`).
+- 🧠 **Automated Skill Directory**: Scans all repositories for `.[client]/skills/**/SKILL.md` files (like `.agents`, `.claude`, or `.cursor`) and extracts their YAML frontmatter, allowing AI agents to dynamically discover and learn your company's standard operating procedures (`list_company_skills`).
 - ⚡ **Zero-Config Start**: Auto-runs missing builds on startup. If you have credentials, just hit `npm start` and the server fetches and indexes everything.
 - 🚨 **Gap Reporting**: Optional ability to file a central Issue / Work Item when docs fail to answer an agent's question.
 
