@@ -106,10 +106,22 @@ export function readDoc(id: string) {
   };
 }
 
+let accountType: string | null = null;
+
 export async function searchCode(query: string) {
   if (!GIT_ORG || !GIT_PAT) throw new Error('GIT_ORG and GIT_PAT required.');
 
-  const q = encodeURIComponent(`${query} org:${GIT_ORG}`);
+  if (!accountType) {
+    const res = await fetch(`${API_BASE}/users/${GIT_ORG}`, { headers });
+    if (res.ok) {
+      const data = await res.json();
+      accountType = data.type === 'User' ? 'user' : 'org';
+    } else {
+      accountType = 'org'; // fallback
+    }
+  }
+
+  const q = encodeURIComponent(`${query} ${accountType}:${GIT_ORG}`);
   const url = `${API_BASE}/search/code?q=${q}&per_page=10`;
 
   const res = await fetch(url, { headers });

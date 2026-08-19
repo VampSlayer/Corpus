@@ -29,14 +29,23 @@ async function fetchJson(url: string) {
 }
 
 async function buildCorpus() {
-  console.log(`Fetching repositories for org: ${GIT_ORG}...`);
+  console.log(`Checking account type for: ${GIT_ORG}...`);
+  const accountInfo = await fetchJson(`${API_BASE}/users/${GIT_ORG}`);
+  const isUser = accountInfo && accountInfo.type === 'User';
+
+  console.log(`Fetching repositories for ${isUser ? 'user' : 'org'}: ${GIT_ORG}...`);
   let repos: any[] = [];
   let page = 1;
   while (true) {
-    const url = `${API_BASE}/orgs/${GIT_ORG}/repos?per_page=100&page=${page}`;
+    const endpoint = isUser ? `user/repos?affiliation=owner` : `orgs/${GIT_ORG}/repos?`;
+    const url = `${API_BASE}/${endpoint}${isUser ? '&' : ''}per_page=100&page=${page}`;
     const pageRepos = await fetchJson(url);
     if (!pageRepos || pageRepos.length === 0) break;
-    repos = repos.concat(pageRepos);
+    // Filter to just the requested owner in case of user repos
+    const filtered = pageRepos.filter(
+      (r: any) => r.owner.login.toLowerCase() === GIT_ORG.toLowerCase()
+    );
+    repos = repos.concat(filtered);
     page++;
   }
 
