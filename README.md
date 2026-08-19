@@ -43,7 +43,9 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 ### 1. Prerequisites
 
 - **Node.js** v18+
-- **GitHub PAT** (Personal Access Token) with `repo` and `read:org` scopes.
+- **GitHub PAT** (Personal Access Token):
+  - **Classic Token**: Needs `repo` (to read private repos) and `read:org` (if querying an organization).
+  - **Fine-Grained Token**: Needs `Contents: Read-only` and `Metadata: Read-only` for all repositories. If you enable `ENABLE_GAP_REPORTING`, you also need `Issues: Read & Write` on the target repository.
 
 ### 2. Configure Environment
 
