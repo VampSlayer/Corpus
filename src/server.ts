@@ -126,7 +126,7 @@ export function createServerApp() {
           result = getSystemMap();
           return { content: [{ type: 'text', text: result }] };
         case 'search_docs':
-          result = searchDocs(args?.query as string);
+          result = await searchDocs(args?.query as string);
           return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         case 'read_doc':
           result = readDoc(args?.id as string);

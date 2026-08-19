@@ -3,8 +3,10 @@ import path from 'path';
 import MiniSearch from 'minisearch';
 import 'dotenv/config';
 import { getProvider } from './providers/index.js';
+import { pipeline } from '@xenova/transformers';
 
 const ENABLE_GAP_REPORTING = process.env.ENABLE_GAP_REPORTING === 'true';
+const DOC_SEARCH_METHOD = process.env.DOC_SEARCH_METHOD || 'lexical';
 
 const corpusDir = process.env.CORPUS_DIR || path.resolve(process.cwd(), 'corpus');
 const manifestPath = path.join(corpusDir, 'manifest.json');
@@ -12,10 +14,23 @@ const systemMapPath = path.join(corpusDir, 'system-map.yaml');
 
 let manifestCache: any = null;
 let searchIndex: MiniSearch | null = null;
+let chunkEmbeddings: Array<{
+  id: string;
+  repo: string;
+  path: string;
+  html_url: string;
+  text: string;
+  embedding: number[];
+}> = [];
 const docsMap: Record<string, any> = {};
+
+let extractor: any = null;
 
 export function _loadCorpusData(data: any) {
   manifestCache = data;
+  chunkEmbeddings = [];
+
+  for (const key in docsMap) delete docsMap[key];
 
   searchIndex = new MiniSearch({
     fields: ['title', 'content'], // fields to index for full-text search
@@ -24,9 +39,6 @@ export function _loadCorpusData(data: any) {
 
   const docsToIndex = [];
   let idCounter = 1;
-
-  // Clear docsMap for tests
-  for (const key in docsMap) delete docsMap[key];
 
   for (const [repoName, repoData] of Object.entries(manifestCache.repos)) {
     for (const doc of (repoData as any).docs) {
@@ -40,12 +52,28 @@ export function _loadCorpusData(data: any) {
         html_url: doc.html_url,
         title: `${repoName} - ${doc.path}`
       };
-      docsToIndex.push(docEntry);
+
       docsMap[docId] = docEntry;
+      docsToIndex.push(docEntry);
+
+      if (DOC_SEARCH_METHOD === 'semantic' && doc.chunks) {
+        for (const chunk of doc.chunks) {
+          chunkEmbeddings.push({
+            id: docId,
+            repo: repoName,
+            path: doc.path,
+            html_url: doc.html_url,
+            text: chunk.text,
+            embedding: chunk.embedding
+          });
+        }
+      }
     }
   }
 
-  searchIndex.addAll(docsToIndex);
+  if (DOC_SEARCH_METHOD !== 'semantic') {
+    searchIndex.addAll(docsToIndex);
+  }
 }
 
 export function loadCorpus() {
@@ -63,27 +91,74 @@ export function getSystemMap() {
   return fs.readFileSync(systemMapPath, 'utf8');
 }
 
-export function searchDocs(query: string) {
-  if (!searchIndex) loadCorpus();
-  const results = searchIndex!.search(query, { prefix: true, combineWith: 'AND' });
-  // Return top 10 results with excerpts
-  return results.slice(0, 10).map((r) => {
-    const doc = docsMap[r.id];
-    // Simple excerpt generation (first 200 chars or index of match)
-    const excerpt = doc.content.substring(0, 200).replace(/\n/g, ' ') + '...';
-    return {
-      id: r.id,
-      repo: r.repo,
-      path: r.path,
-      score: r.score,
-      html_url: r.html_url,
-      excerpt
-    };
-  });
+function cosineSimilarity(vecA: number[], vecB: number[]) {
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    normA += vecA[i] * vecA[i];
+    normB += vecB[i] * vecB[i];
+  }
+  if (normA === 0 || normB === 0) return 0;
+  return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+}
+
+export async function searchDocs(query: string) {
+  if (Object.keys(docsMap).length === 0) loadCorpus();
+
+  if (DOC_SEARCH_METHOD !== 'semantic') {
+    const results = searchIndex!.search(query, { prefix: true, combineWith: 'AND' });
+    return results.slice(0, 10).map((r) => {
+      const doc = docsMap[r.id];
+      const excerpt = doc.content.substring(0, 200).replace(/\n/g, ' ') + '...';
+      return {
+        id: r.id,
+        repo: r.repo,
+        path: r.path,
+        score: r.score,
+        html_url: r.html_url,
+        excerpt
+      };
+    });
+  }
+
+  // Semantic Search Flow
+  if (!extractor) {
+    extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+  }
+
+  const out = await extractor(query, { pooling: 'mean', normalize: true });
+  const queryEmbedding = Array.from(out.data) as number[];
+
+  const results = [];
+  for (const chunk of chunkEmbeddings) {
+    const score = cosineSimilarity(queryEmbedding, chunk.embedding);
+    results.push({ ...chunk, score });
+  }
+
+  results.sort((a, b) => b.score - a.score);
+
+  const uniqueDocs: Record<string, any> = {};
+  for (const r of results) {
+    if (!uniqueDocs[r.id]) {
+      uniqueDocs[r.id] = {
+        id: r.id,
+        repo: r.repo,
+        path: r.path,
+        score: r.score,
+        html_url: r.html_url,
+        excerpt: r.text.length > 200 ? r.text.substring(0, 200).replace(/\n/g, ' ') + '...' : r.text
+      };
+    }
+    if (Object.keys(uniqueDocs).length >= 10) break;
+  }
+
+  return Object.values(uniqueDocs);
 }
 
 export function readDoc(id: string) {
-  if (!searchIndex) loadCorpus();
+  if (Object.keys(docsMap).length === 0) loadCorpus();
   const doc = docsMap[id];
   if (!doc) {
     throw new Error(`Document with ID ${id} not found.`);

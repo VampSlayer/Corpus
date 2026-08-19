@@ -59,6 +59,13 @@ _(Note: If you enable `ENABLE_GAP_REPORTING`, ensure your token also has Write p
 
 Create a `.env` file in the root directory:
 
+**Global Search Settings (Optional):**
+
+```env
+# Choose between 'lexical' (default keyword search) or 'semantic' (local embeddings)
+DOC_SEARCH_METHOD=lexical
+```
+
 **For GitHub (Default):**
 
 ```env

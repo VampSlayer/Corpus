@@ -36,21 +36,21 @@ test('Corpus Search Tools', async (t) => {
   // Load the test data into memory
   _loadCorpusData(mockManifest);
 
-  await t.test('searchDocs finds relevant documents', () => {
-    const results = searchDocs('microservices');
+  await t.test('searchDocs finds relevant documents', async () => {
+    const results = await searchDocs('microservices');
     assert.equal(results.length, 1);
     assert.equal(results[0].path, 'docs/architecture.md');
     assert.equal(results[0].repo, 'test-repo');
     assert.ok(results[0].excerpt.includes('microservices'));
   });
 
-  await t.test('searchDocs returns empty array for no match', () => {
-    const results = searchDocs('kubernetes');
+  await t.test('searchDocs returns empty array for no match', async () => {
+    const results = await searchDocs('kubernetes');
     assert.equal(results.length, 0);
   });
 
-  await t.test('readDoc returns full content for valid ID', () => {
-    const results = searchDocs('software');
+  await t.test('readDoc returns full content for valid ID', async () => {
+    const results = await searchDocs('software');
     assert.equal(results.length, 1);
 
     const docId = results[0].id;
@@ -71,6 +71,25 @@ test('Corpus Search Tools', async (t) => {
     assert.equal(schemas.length, 1);
     assert.equal(schemas[0].path, 'openapi.yaml');
     assert.equal(schemas[0].repo, 'test-repo');
+  });
+
+  await t.test('searchDocs executes semantic search when configured', async () => {
+    process.env.DOC_SEARCH_METHOD = 'semantic';
+    // Manually push a chunk to the mock so it has something to embed
+    (mockManifest.repos['test-repo'].docs[0] as any).chunks = [
+      {
+        text: 'The core architecture uses microservices and a message bus.',
+        embedding: Array(384).fill(0.1)
+      }
+    ];
+    _loadCorpusData(mockManifest);
+
+    const results = await searchDocs('architecture');
+    assert.ok(Array.isArray(results));
+
+    // Reset env
+    delete process.env.DOC_SEARCH_METHOD;
+    _loadCorpusData(mockManifest);
   });
 });
 
