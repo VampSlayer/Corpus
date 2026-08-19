@@ -127,6 +127,29 @@ claude mcp add corpus "node $(pwd)/dist/src/index.js"
 - `npm run build`: Runs the full pipeline and compiles TypeScript.
 - `npm run test`: Runs unit tests using the native Node.js test runner.
 
+## 🧩 System Map & `catalog-info.yaml`
+
+Corpus automatically generates a global dependency graph of your organization's services. To participate in the system map, each repository should contain a `catalog-info.yaml` file at its root, conforming to the [Backstage Descriptor Format](https://backstage.io/docs/features/software-catalog/descriptor-format).
+
+Ideally, your `catalog-info.yaml` should define a `Component` and list the services it depends on under `spec.dependsOn`. Corpus reads these dependencies and automatically computes the reverse edges (which services call yours) to create a complete map of your ecosystem!
+
+**Example `catalog-info.yaml`:**
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: my-auth-service
+  description: Handles user authentication and token generation
+spec:
+  type: service
+  lifecycle: production
+  owner: auth-team
+  dependsOn:
+    - component:user-database
+    - component:email-service
+```
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started, set up your development environment, and submit Pull Requests.
