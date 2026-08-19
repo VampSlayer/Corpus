@@ -47,9 +47,13 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 ### 1. Prerequisites
 
 - **Node.js** v22+
-- **GitHub PAT** (Personal Access Token):
-  - **Classic Token**: Needs `repo` (to read private repos) and `read:org` (if querying an organization).
-  - **Fine-Grained Token**: Needs `Contents: Read-only` and `Metadata: Read-only` for all repositories. If you enable `ENABLE_GAP_REPORTING`, you also need `Issues: Read & Write` on the target repository.
+- **VCS Authentication**:
+  - **GitHub**: Requires a PAT (Classic: `repo`, `read:org` | Fine-Grained: `Contents: Read-only`, `Metadata: Read-only`).
+  - **GitLab**: Requires a Personal Access Token with `read_api` and `read_repository` scopes.
+  - **Bitbucket**: Requires an App Password with `repository:read` and `workspace:read` scopes.
+  - **Azure DevOps**: Requires a Personal Access Token with `Code (Read)` scope.
+
+_(Note: If you enable `ENABLE_GAP_REPORTING`, ensure your token also has Write permissions for Issues / Work Items)._
 
 ### 2. Configure Environment
 
@@ -78,6 +82,30 @@ GITLAB_URL=https://gitlab.com # Optional: Change if using self-hosted GitLab
 # Optional
 ENABLE_GAP_REPORTING=false
 GITHUB_PROJECT=your-gitlab-project-id # The Project ID where doc gaps are filed
+```
+
+**For Bitbucket:**
+
+```env
+VCS_PROVIDER=bitbucket
+GIT_ORG=your-workspace-name
+GIT_PAT=your-username:your-app-password # Basic Auth or Bearer token
+
+# Optional
+ENABLE_GAP_REPORTING=false
+GITHUB_PROJECT=your-workspace/your-repo-for-gaps
+```
+
+**For Azure DevOps:**
+
+```env
+VCS_PROVIDER=azure
+GIT_ORG=your-organization-name
+GIT_PAT=your-personal-access-token
+
+# Optional
+ENABLE_GAP_REPORTING=false
+GITHUB_PROJECT=your-project-name # The Azure Project where Doc Gaps (Work Items) are filed
 ```
 
 ### 3. Build & Run
