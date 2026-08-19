@@ -64,6 +64,8 @@ GITHUB_PROJECT=your-github-org/doc-gaps-repo
 
 ### 3. Build & Run
 
+**Local Execution:**
+
 ```bash
 npm install
 npm run build
@@ -71,6 +73,13 @@ npm start
 ```
 
 _Note: `npm start` automatically kicks off the corpus and system-map generation scripts if they haven't been run yet._
+
+**Docker Execution:**
+
+```bash
+docker build -t corpus-mcp .
+docker run -i -e GIT_ORG=your-github-org -e GIT_PAT=your-github-pat corpus-mcp
+```
 
 ## 🤖 Registering with AI Clients
 
