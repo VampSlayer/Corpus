@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'yaml';
-import { computeReverseEdges } from '../src/logic.js';
+import { buildEntityGraph } from '../src/logic.js';
 
 const outDir = path.resolve(process.cwd(), 'corpus');
 const manifestPath = path.join(outDir, 'manifest.json');
@@ -16,7 +16,7 @@ function buildMap() {
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-  const { systemMap, missingCatalog } = computeReverseEdges(manifest.repos);
+  const { systemMap, missingCatalog } = buildEntityGraph(manifest.repos);
 
   fs.writeFileSync(systemMapPath, yaml.stringify(systemMap));
   console.log(`system-map.yaml built at ${systemMapPath}`);
