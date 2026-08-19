@@ -6,7 +6,7 @@
     "build:corpus": "tsx scripts/build-corpus.ts",
     "build:map": "tsx scripts/build-map.ts",
     "build": "npm run build:corpus && npm run build:map && tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "test": "node --import tsx --test \"test/**/*.test.ts\"",
     "prepare": "husky"
   },
