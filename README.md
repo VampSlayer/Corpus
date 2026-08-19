@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/modelcontextprotocol/sdk/main/docs/static/img/mcp-logo.svg" width="100" height="100" alt="Corpus Logo">
+  <img src="assets/logo.jpg" width="200" height="200" alt="Corpus Logo">
   <h1>📚 Corpus</h1>
 
   <p>
