@@ -27,6 +27,8 @@
 
 **Corpus** aggregates the documentation across all your organization's repositories, builds a live system map using Spotify Backstage catalog entities, and puts it all behind a powerful **Model Context Protocol (MCP)** server.
 
+It supports **GitHub** and **GitLab** out of the box, with an extensible adapter architecture to support any VCS provider.
+
 Give your AI agents (Claude, Copilot, etc.) the holistic context they need to understand your architecture, service ownership, docs, and code—all in one place!
 
 ## ✨ Features
@@ -53,13 +55,29 @@ Give your AI agents (Claude, Copilot, etc.) the holistic context they need to un
 
 Create a `.env` file in the root directory:
 
+**For GitHub (Default):**
+
 ```env
+VCS_PROVIDER=github
 GIT_ORG=your-github-org-or-username
 GIT_PAT=your-github-personal-access-token
 
 # Optional
 ENABLE_GAP_REPORTING=false
 GITHUB_PROJECT=your-github-org/doc-gaps-repo
+```
+
+**For GitLab:**
+
+```env
+VCS_PROVIDER=gitlab
+GIT_PAT=your-gitlab-personal-access-token
+GIT_ORG=your-gitlab-group-name # Optional: Scopes discovery to a specific group
+GITLAB_URL=https://gitlab.com # Optional: Change if using self-hosted GitLab
+
+# Optional
+ENABLE_GAP_REPORTING=false
+GITHUB_PROJECT=your-gitlab-project-id # The Project ID where doc gaps are filed
 ```
 
 ### 3. Build & Run

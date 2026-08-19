@@ -23,8 +23,8 @@ test('isDocPath', async (t) => {
     assert.equal(isDocPath('adr/0001-init.md'), true);
   });
 
-  await t.test('includes .claude/skills/**/SKILL.md', () => {
-    assert.strictEqual(isDocPath('.claude/skills/setup/SKILL.md'), true);
+  await t.test('includes .agents/skills/**/SKILL.md', () => {
+    assert.strictEqual(isDocPath('.agents/skills/setup/SKILL.md'), true);
   });
 
   await t.test('includes OpenAPI and Swagger schemas', () => {
